@@ -1,0 +1,34 @@
+{
+    "version": "1.5.0-beta",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "isolatedModules": false,
+        "jsx": "react",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "./**/*.tsx",
+        "!./node_modules/**/*"
+    ],
+    "files": [
+        "./app.ts",
+        "./d.ts/express.d.ts",
+        "./d.ts/mocha.d.ts",
+        "./d.ts/node.d.ts",
+        "./d.ts/phaser.d.ts",
+        "./d.ts/player.d.ts",
+        "./d.ts/should.d.ts",
+        "./d.ts/socket.io-client.d.ts",
+        "./d.ts/socket.io.d.ts",
+        "./server/game.ts"
+    ]
+}

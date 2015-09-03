@@ -1,0 +1,20 @@
+{
+  "name": "elementi",
+  "version": "0.0.0",
+  "authors": [
+    "NateTheGreatt <nam23@njit.edu>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "directory": "client/bower_components",
+  "dependencies": {
+    "phaser": "~2.4.3",
+    "requirejs": "~2.1.20"
+  }
+}
