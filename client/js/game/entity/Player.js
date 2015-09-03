@@ -5,9 +5,10 @@ define([
   'component/Stats',
   'component/Melee',
   'component/ProjectileAttack',
-  'component/Inventory'
+  'component/Inventory',
+  'component/Healthbar'
 ],
-function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory) {
+function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory, Healthbar) {
   function Player(x,y) {
     Entity.call(this, x, y);
     console.log('player added');
@@ -20,6 +21,7 @@ function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory)
     this.stats = this.addComponent(new Stats(this));
     this.inventory = this.addComponent(new Inventory(this));
 
+    this.healthbar = this.addComponent(new Healthbar(this));
   }
 
   Player.prototype = Object.create(Entity.prototype);

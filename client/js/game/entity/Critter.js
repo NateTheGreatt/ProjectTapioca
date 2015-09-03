@@ -13,6 +13,7 @@ function(game, Entity, Stats, Aggro, ChaseAI, Drops) {
     this.name = 'Critter';
 
     this.stats = this.addComponent(new Stats(this));
+    this.stats.hp = this.stats.maxHP = 50;
     this.drops = this.addComponent(new Drops(this));
     this.aggro = this.addComponent(new Aggro(this,{passive: true}));
     this.chaseAI = this.addComponent(new ChaseAI(this,{flee: true}));

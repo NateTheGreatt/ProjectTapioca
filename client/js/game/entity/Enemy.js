@@ -5,9 +5,10 @@ define([
   'component/Melee',
   'component/Aggro',
   'component/ChaseAI',
-  'component/Drops'
+  'component/Drops',
+  'component/Healthbar'
 ],
-function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops) {
+function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops, Healthbar) {
   function Enemy(x,y) {
     Entity.call(this, x, y);
 
@@ -21,6 +22,7 @@ function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops) {
 
     this.aggro.onTargetAquired.add(this.chaseAI.setTarget, this.chaseAI);
 
+    this.healthbar = this.addComponent(new Healthbar(this));
   }
 
   Enemy.prototype = Object.create(Entity.prototype);

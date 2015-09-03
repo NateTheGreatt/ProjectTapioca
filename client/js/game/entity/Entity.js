@@ -13,6 +13,7 @@ function(game) {
 
     this.id = entityCount++;
     this.components = {};
+    
   }
 
   Entity.prototype = Object.create(Phaser.Sprite.prototype);
