@@ -23,6 +23,7 @@ function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops, Healthbar) {
     this.aggro.onTargetAquired.add(this.chaseAI.setTarget, this.chaseAI);
 
     this.healthbar = this.addComponent(new Healthbar(this));
+
   }
 
   Enemy.prototype = Object.create(Entity.prototype);

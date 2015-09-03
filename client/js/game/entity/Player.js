@@ -22,6 +22,7 @@ function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory,
     this.inventory = this.addComponent(new Inventory(this));
 
     this.healthbar = this.addComponent(new Healthbar(this));
+
   }
 
   Player.prototype = Object.create(Entity.prototype);

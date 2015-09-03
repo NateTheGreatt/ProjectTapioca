@@ -2,7 +2,6 @@ define(['game'],
 function(game) {
   var entityCount = 0;
   function Entity(x,y) {
-    
     this.rect = game.make.bitmapData(32, 32);
     this.rect.ctx.fillStyle = '#FFFFFF';
     this.rect.ctx.fillRect(0, 0, 32, 32);
@@ -13,12 +12,10 @@ function(game) {
 
     this.id = entityCount++;
     this.components = {};
-    
   }
 
   Entity.prototype = Object.create(Phaser.Sprite.prototype);
   Entity.prototype.constructor = Entity;
-  
 
   Entity.prototype.updateComponents = function() {
     for(var key in this.components) {

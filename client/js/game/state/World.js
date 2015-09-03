@@ -1,8 +1,8 @@
 define([
   'game',
-  'entity/Player',
-  'entity/Enemy',
-  'entity/Critter',
+  'Entity/Player',
+  'Entity/Enemy',
+  'Entity/Critter',
   'registry'
 ],
 function(game, Player, Enemy, Critter, registry){
@@ -22,6 +22,7 @@ function(game, Player, Enemy, Critter, registry){
     registry.players.add(player);
     
     window.player = player;
+    
 
     enemy = new Enemy(100,100);
     registry.enemies.add(enemy);
