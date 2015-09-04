@@ -1,4 +1,6 @@
-define(['game'],
+define([
+  'game'
+],
 function(game) {
   var entityCount = 0;
   function Entity(x,y) {
@@ -16,6 +18,10 @@ function(game) {
 
   Entity.prototype = Object.create(Phaser.Sprite.prototype);
   Entity.prototype.constructor = Entity;
+  
+  Entity.prototype.getMidpoint = function() {
+    return {x: this.x+this.width/2, y: this.y+this.height/2};
+  };
 
   Entity.prototype.updateComponents = function() {
     for(var key in this.components) {
@@ -34,6 +40,9 @@ function(game) {
     delete this.components[name];
     return this;
   };
+  Entity.prototype.update = function() {
+    if(this.alive) this.updateComponents();
+  }
 
   return Entity;
 

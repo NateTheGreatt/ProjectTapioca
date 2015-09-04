@@ -20,36 +20,43 @@ function(game,World,Component,Projectile,registry) {
     ProjectileAttack.prototype.constructor = ProjectileAttack;
     
 
-  ProjectileAttack.prototype.attack = function() {
-      this.cooling = this.cooldown;
-      console.log('attacking');
-       this.pointClicked = {x: game.input.activePointer.x, y: game.input.activePointer.y};
-       var angle = game.math.angleBetween(
-       this.parent.x+(this.parent.width/2),
-       this.parent.y+(this.parent.height/2), 
-       this.pointClicked.x,
-       this.pointClicked.y);
-       var dist = 26;
-       
-       registry.projectiles.add(new Projectile(this.parent, this.parent.x+(this.parent.width/2),this.parent.y+(this.parent.height/2), angle));
-  }
-  
-  ProjectileAttack.prototype.update = function () {
+    ProjectileAttack.prototype.attack = function() {
+        if(this.cooling <= 0) {
+            this.cooling = this.cooldown;
+            
+            this.pointClicked = {x: game.input.activePointer.x, y: game.input.activePointer.y};
+            var angle = game.math.angleBetween(
+                this.parent.getMidpoint().x,
+                this.parent.getMidpoint().y, 
+                this.pointClicked.x,
+                this.pointClicked.y
+            );
+            
+            registry.projectiles.add(
+                new Projectile(
+                    this.parent, 
+                    this.parent.getMidpoint().x,
+                    this.parent.getMidpoint().y, 
+                    angle
+                )
+            );
+        }
+    }
+    
+    ProjectileAttack.prototype.update = function () {
       
-      this.cooling -=game.time.elapsed;
-      
-      if(this.parent.name == 'Player') {
+        this.cooling -=game.time.elapsed;
+        
+        if(this.parent.name == 'Player') {
           
-        //   this.setHitboxPos();
-          
-          if(game.input.activePointer.leftButton.isDown) {
-              if(this.cooling < 0) this.attack();
-          }
-      }
+            if(game.input.activePointer.leftButton.isDown) {
+                if(this.cooling < 0) this.attack();
+            }
+        }
        
       
-  };
-  
-  return ProjectileAttack;
-  
+    };
+    
+    return ProjectileAttack;
+
 })

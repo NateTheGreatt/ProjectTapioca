@@ -21,24 +21,3 @@ var frameCount = 0;
 var id = gameloop.setGameLoop(function(delta) {
   // game.update()
 }, 1000/fps);
-
-
-// 30 fps
-// var tickLengthMs = 1000 / 30;
-// var previousTick = Date.now();
-// var actualTicks = 0;
-// var gameLoop = function () {
-//     var now = Date.now();
-//     actualTicks++;
-//     if (previousTick + tickLengthMs <= now) {
-//         var delta = (now - previousTick) / 1000;
-//         previousTick = now;
-//         actualTicks = 0;
-//     }
-//     if (Date.now() - previousTick < tickLengthMs - 16) {
-//         setTimeout(gameLoop);
-//     }
-//     else {
-//         setImmediate(gameLoop);
-//     }
-// };

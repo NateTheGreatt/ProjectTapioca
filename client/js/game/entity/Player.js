@@ -1,31 +1,30 @@
 define([
   'game',
-  'entity/Entity',
+  'entity/Alive',
   'component/PlayerControl',
-  'component/Stats',
   'component/Melee',
   'component/ProjectileAttack',
-  'component/Inventory',
-  'component/Healthbar'
+  'component/Inventory'
 ],
-function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory, Healthbar) {
+function(game, Alive, PlayerControl, Melee, ProjectileAttack, Inventory) {
   function Player(x,y) {
-    Entity.call(this, x, y);
+    Alive.call(this, x, y);
     console.log('player added');
 
     this.name = 'Player';
+    this.speed = 2;
 
-    this.addComponent(new PlayerControl(this));
-    //this.melee = this.addComponent(new Melee(this));
-    this.projectile = this.addComponent(new ProjectileAttack(this));
-    this.stats = this.addComponent(new Stats(this));
+    this.inputCtrl = this.addComponent(new PlayerControl(this));
+    // this.attack = this.addComponent(new Melee(this));
+    this.attack = this.addComponent(new ProjectileAttack(this));
     this.inventory = this.addComponent(new Inventory(this));
-
-    this.healthbar = this.addComponent(new Healthbar(this));
+    
+    
+    this.inputCtrl.onAttack.add(this.attack.attack, this.attack);
 
   }
 
-  Player.prototype = Object.create(Entity.prototype);
+  Player.prototype = Object.create(Alive.prototype);
   Player.prototype.constructor = Player;
   
   Player.prototype.pickup = function(item) {
@@ -33,7 +32,7 @@ function(game, Entity, PlayerControl, Stats, Melee, ProjectileAttack, Inventory,
   };
 
   Player.prototype.update = function() {
-    this.updateComponents();
+    Alive.prototype.update.call(this);
   };
 
   return Player;

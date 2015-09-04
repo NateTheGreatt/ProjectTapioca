@@ -1,40 +1,38 @@
 define([
   'game',
-  'entity/Entity',
-  'component/Stats',
+  'entity/Alive',
   'component/Melee',
   'component/Aggro',
-  'component/ChaseAI',
-  'component/Drops',
-  'component/Healthbar'
+  'component/BasicMobAI',
+  'component/Drops'
 ],
-function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops, Healthbar) {
+function(game, Alive, Melee, Aggro, BasicMobAI, Drops) {
   function Enemy(x,y) {
-    Entity.call(this, x, y);
+    Alive.call(this, x, y);
 
     this.name = 'Enemy';
 
-    this.stats = this.addComponent(new Stats(this));
-    this.addComponent(new Melee(this));
+    this.melee = this.addComponent(new Melee(this));
+    this.melee.dmg = 10;
     this.aggro = this.addComponent(new Aggro(this, {aggressive: true}));
-    this.chaseAI = this.addComponent(new ChaseAI(this));
+    this.ai = this.addComponent(new BasicMobAI(this));
     this.drops = this.addComponent(new Drops(this));
 
-    this.aggro.onTargetAquired.add(this.chaseAI.setTarget, this.chaseAI);
-
-    this.healthbar = this.addComponent(new Healthbar(this));
+    this.aggro.onTargetAquired.add(this.ai.setTarget, this.ai);
+    this.aggro.onTargetAquired.add(this.melee.setTarget, this.melee);
 
   }
 
-  Enemy.prototype = Object.create(Entity.prototype);
+  Enemy.prototype = Object.create(Alive.prototype);
   Enemy.prototype.constructor = Enemy;
 
   Enemy.prototype.hit = function(source, dmg) {
-    this.stats.hp -= dmg;
+    Alive.prototype.hit.call(this,source,dmg); // super call
+    
     if(this.stats.hp <= 0) {
-      this.kill();
       this.drops.dropItems();
     }
+    
     if(!this.aggro.target) this.aggro.setTarget(source);
     var angle = game.math.angleBetween(
       this.x+(this.width/2),
@@ -44,10 +42,10 @@ function(game, Entity, Stats, Melee, Aggro, ChaseAI, Drops, Healthbar) {
     );
     this.x -= Math.cos(angle)*15;
     this.y -= Math.sin(angle)*15;
-  }
+  };
+  
   Enemy.prototype.update = function() {
-    this.updateComponents();
-    if(this.alive) game.debug.body(this);
+    Alive.prototype.update.call(this);
   };
 
   return Enemy;

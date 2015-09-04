@@ -14,7 +14,7 @@ function(game, Component, registry, items, WorldItem) {
         this.items = [];
         
         for(var key in items) {
-            this.items.push(new WorldItem(0,0,items[key]));
+            this.items.push(new WorldItem(-110,-110,items[key]));
         }
     }
     

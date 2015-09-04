@@ -1,13 +1,15 @@
 define([
   'game',
-  'Entity/Player',
-  'Entity/Enemy',
-  'Entity/Critter',
+  'entity/Player',
+  'entity/Enemy',
+  'entity/Critter',
   'registry'
 ],
 function(game, Player, Enemy, Critter, registry){
 
   var player,enemy,critter;
+  
+  var pointsTxt;
 
   function World() {
 
@@ -30,16 +32,38 @@ function(game, Player, Enemy, Critter, registry){
     critter = new Critter(200,200);
     registry.enemies.add(critter);
 
-    // enemy = new Enemy(200,110);
-    // registry.enemies.add(enemy);
-    //
-    // enemy = new Enemy(300,120);
-    // registry.enemies.add(enemy);
+    enemy = new Enemy(200,110);
+    registry.enemies.add(enemy);
+    
+    enemy = new Enemy(300,120);
+    registry.enemies.add(enemy);
+
+    enemy = new Enemy(400,110);
+    registry.enemies.add(enemy);
+    
+    enemy = new Enemy(500,120);
+    registry.enemies.add(enemy);
+
+    enemy = new Enemy(200,410);
+    registry.enemies.add(enemy);
+    
+    enemy = new Enemy(300,320);
+    registry.enemies.add(enemy);
+
+    enemy = new Enemy(400,410);
+    registry.enemies.add(enemy);
+    
+    enemy = new Enemy(500,320);
+    registry.enemies.add(enemy);
+    pointsTxt = game.add.text(10, 10, "Points: "+player.inventory.items.length, { font: "12px Arial", fill: "#ffffff"});
+
   }
 
 
   World.prototype.update = function() {
-    game.debug.body(player);
+    
+    pointsTxt.text = 'Points: '+player.inventory.items.length;
+    
   }
 
   return World;

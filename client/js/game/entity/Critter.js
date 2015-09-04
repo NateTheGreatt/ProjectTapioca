@@ -1,18 +1,16 @@
 define([
   'game',
-  'entity/Entity',
-  'component/Stats',
+  'entity/Alive',
   'component/Aggro',
   'component/ChaseAI',
   'component/Drops'
 ],
-function(game, Entity, Stats, Aggro, ChaseAI, Drops) {
+function(game, Alive, Aggro, ChaseAI, Drops) {
   function Critter(x,y) {
-    Entity.call(this, x, y);
+    Alive.call(this, x, y);
 
     this.name = 'Critter';
 
-    this.stats = this.addComponent(new Stats(this));
     this.stats.hp = this.stats.maxHP = 50;
     this.drops = this.addComponent(new Drops(this));
     this.aggro = this.addComponent(new Aggro(this,{passive: true}));
@@ -22,22 +20,18 @@ function(game, Entity, Stats, Aggro, ChaseAI, Drops) {
 
   }
 
-  Critter.prototype = Object.create(Entity.prototype);
+  Critter.prototype = Object.create(Alive.prototype);
   Critter.prototype.constructor = Critter;
 
   Critter.prototype.hit = function(source, dmg) {
-    this.stats.hp -= dmg;
-    if(this.stats.hp <= 0) {
-      this.kill();
-      this.drops.dropItems();
-    }
+    Alive.prototype.hit.call(this,source,dmg); // super call
+    
     if(!this.aggro.target) {
       this.aggro.setTarget(source);
     }
   }
   Critter.prototype.update = function() {
-    this.updateComponents();
-    if(this.alive) game.debug.body(this);
+    Alive.prototype.update.call(this);
   };
 
   return Critter;

@@ -2,14 +2,15 @@
 
 define(['game','component/Component'],
 function(game, Component) {
-  function ChaseAI(parent, opts) {
+  function BasicMobAI(parent, opts) {
     Component.call(this, parent);
-    this.name = 'ChaseAI';
+    this.name = 'BasicMobAI';
 
     this.target = undefined;
 
     this.flee = false;
     this.speed = 1;
+    this.aggroRange = 40;
 
     if(opts){
       for(var key in opts) {
@@ -20,14 +21,14 @@ function(game, Component) {
     if(this.flee) this.speed *= -1;
   }
 
-  ChaseAI.prototype = Object.create(Component.prototype);
-  ChaseAI.prototype.constructor = ChaseAI;
+  BasicMobAI.prototype = Object.create(Component.prototype);
+  BasicMobAI.prototype.constructor = BasicMobAI;
 
-  ChaseAI.prototype.setTarget = function(target) {
+  BasicMobAI.prototype.setTarget = function(target) {
     this.target = target;
   };
 
-  ChaseAI.prototype.update = function() {
+  BasicMobAI.prototype.update = function() {
     if(this.target) {
       var angle = game.math.angleBetween(
         this.parent.getMidpoint().x,
@@ -43,12 +44,12 @@ function(game, Component) {
         this.target.getMidpoint().y
       );
 
-      if(dist > 30) {
+      if(dist > this.target.width) {
         this.parent.x += Math.cos(angle)*this.speed;
         this.parent.y += Math.sin(angle)*this.speed;
       }
     }
   }
 
-  return ChaseAI;
+  return BasicMobAI;
 })
