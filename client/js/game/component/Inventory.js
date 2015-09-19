@@ -14,8 +14,10 @@ function(game,Component,registry) {
         
         scope = this;
         
+        this.pending = [];
+        
         this.items = [];
-        this.slots = 24;
+        this.slots = 4;
         
         padding = 5;
         icoSize = 16;
@@ -77,135 +79,153 @@ function(game,Component,registry) {
     Inventory.prototype.constructor = Inventory;
     
     Inventory.prototype.addItem = function(item) {
-        
-        item.kill();
-        
-        if(this.items.length < this.slots) {
-            
-        }
-        
-        var slot;
+        this.pending.push(item);
+    };
+    
+    Inventory.prototype.processItem = function(item) {
         
         function findSlotWithSameItem(item) {
             for(var i=0;i<scope.bg.slots.length;i++) {
-                if(scope.bg.slots[i].item) {
-                    if(scope.bg.slots[i].item.json.name == item.json.name) return scope.bg.slots[i];
+                var slot = scope.bg.slots[i];
+                if(slot.item) { // if slot has item and it can be stacked
+                    if(slot.item.json.name == item.json.name // if names are the same
+                    && slot.item.stack < slot.item.maxStack) // and it's not a full stack
+                        return slot;
                 }
             }
             return false;
         }
         
-        function findFirstFreeSlot() {
+        function findFirstEmptySlot() {
             for(var i=0;i<scope.bg.slots.length;i++) {
-                if(scope.bg.slots[i].item == null) {
-                    return scope.bg.slots[i];
+                var slot = scope.bg.slots[i]; 
+                if(slot.item == undefined) {
+                    return slot;
                 }
             }
             return false;
         }
         
-        slot = findSlotWithSameItem(item);
-        
-        // if item is stackable and one exists in the inventory already
-        if(item.json.stackable && slot) {
-            // stack that shit
-            slot.item.stack++;
+        var stackSlot = findSlotWithSameItem(item);
+        if(item.maxStack && stackSlot) {
+            stackSlot.item.stack++;
             
-            if(slot.item.children[0]) slot.item.children[0].setText(slot.item.stack)
+            // update stack txt, else add stack txt
+            if(stackSlot.item.children[0]) stackSlot.item.children[0].setText(stackSlot.item.stack);
             else {
-                var stackTxt = game.add.text(0,0,slot.item.stack,{font: '9px Courier New', fill: '#ffffff'});
-                slot.item.addChild(stackTxt);
+                var stackTxt = game.add.text(0,0,stackSlot.item.stack,{font: '8px Courier New', fill: '#ffffff'});
+                stackSlot.item.addChild(stackTxt);
             }
             
-            
+            item.kill();
+            registry.ui.removeChild(item);
         } else {
-            
-            // otherwise put it into a new slot
-            
-            scope.items.push(item);
-            
-            slot = findFirstFreeSlot();
-            
-            var icoGfx = game.make.bitmapData(icoSize,icoSize);
-            icoGfx.ctx.fillStyle = item.json.colorString;
-            icoGfx.ctx.fillRect(0, 0, icoSize, icoSize);
-            
-            var inventorySprite = new Phaser.Sprite(game, slot.x, slot.y, icoGfx);
-            
-            inventorySprite.json = item.json;
-            inventorySprite.stack = item.stack;
-            
-            inventorySprite.inputEnabled = true;
-            inventorySprite.input.enableDrag();
-    
-            scope.bg.addChild(inventorySprite);
-            scope.bg.items.push(inventorySprite);
-            slot.item = inventorySprite;
-            
-            function findClosestSlotTo(sprite) {
-                var closestSlot,dist;
-                var lastDist = 100;
-                scope.bg.slots.forEach(function(slot) {
-                    dist = game.math.distance(slot.x,slot.y,sprite.x,sprite.y);
-                    if(dist < lastDist) {
-                        lastDist = dist;
-                        closestSlot = slot;
+            var emptySlot = findFirstEmptySlot();
+            if(emptySlot) {
+                registry.ui.remove(item);
+                
+                item.x = emptySlot.x;
+                item.y = emptySlot.y;
+                item.width = icoSize;
+                item.height = icoSize;
+                item.inputEnabled = true;
+                item.input.enableDrag();
+                // item.events.destroy();
+                
+                scope.bg.addChild(item);
+                emptySlot.item = item;
+                item.slot = emptySlot;
+                scope.items.push(item);
+                
+                function findClosestSlotTo(sprite) {
+                    var closestSlot,dist;
+                    var lastDist = 50; // if sprite is beyond this distance from any slot it will be deleted
+                    scope.bg.slots.forEach(function(slot) {
+                        dist = game.math.distance(slot.x,slot.y,sprite.x,sprite.y);
+                        if(dist < lastDist) {
+                            lastDist = dist;
+                            closestSlot = slot;
+                        }
+                    });
+                    return closestSlot;
+                }
+                
+                var heldItemSlot;
+                item.events.onDragStart.add(function(heldItem, pointer) {
+                    
+                    // put heldItem at top of display list by removing it and then re-adding it
+                    scope.bg.removeChild(heldItem);
+                    scope.bg.addChild(heldItem);
+                    
+                    // var closestSlot = findClosestSlotTo(heldItem);
+                    // closestSlot.item = null;
+                    // heldItemSlot = closestSlot;
+                    heldItemSlot = heldItem.slot;
+                });
+                item.events.onDragStop.add(function(heldItem, pointer) {
+                    
+                    var closestSlot = findClosestSlotTo(heldItem);
+                    
+                    if(closestSlot) {
+                        // if closestSlot has an item in it
+                        if(closestSlot.item != undefined) {
+                            
+                            var closestItem = closestSlot.item;
+                            
+                            // move that item to the held item's slot
+                            closestItem.x = heldItemSlot.x;
+                            closestItem.y = heldItemSlot.y;
+                            
+                            // swap slot references
+                            closestItem.slot = heldItemSlot;
+                            heldItem.slot = closestSlot;
+                            
+                            // swap item references
+                            closestSlot.item = heldItem;
+                            heldItemSlot.item = closestItem;
+                            
+                            
+                        } else { // if slot is empty
+                            
+                            heldItem.slot = closestSlot;
+                            closestSlot.item = heldItem;
+                            
+                            heldItemSlot.item = null;
+                            
+                        }
+                        
+                        // move held item to closest slot no matter what
+                        heldItem.x = closestSlot.x;
+                        heldItem.y = closestSlot.y;
+                        
+                        
+                        
+                    } else { // dragged too far out of bounds, so delete item
+                        heldItem.kill();
+                        heldItem.slot.item = undefined;
+                        scope.bg.removeChild(heldItem);
+                        scope.items.splice(scope.items.indexOf(heldItem),1);
+                                
                     }
                 });
-                return closestSlot;
+                
+                item.events.onInputDown.add(function(item, pointer) {
+                    if(pointer.rightButton.isDown) {
+                        
+                    }
+                });
+
             }
-            
-            var lastSlot;
-            inventorySprite.events.onDragStart.add(function(heldItem, pointer) {
-                
-                // put heldItem at top of display list by removing it and then re-adding it
-                scope.bg.removeChild(heldItem);
-                scope.bg.addChild(heldItem);
-                
-                var closestSlot = findClosestSlotTo(heldItem);
-                closestSlot.item = null;
-                lastSlot = closestSlot;
-            });
-            inventorySprite.events.onDragStop.add(function(heldItem, pointer) {
-                
-                var closestSlot = findClosestSlotTo(heldItem);
-                
-                if(closestSlot) {
-                    // swapping items
-                    if(closestSlot.item) {
-                        // move the contained item to the held item's previous slot
-                        closestSlot.item.x = lastSlot.x;
-                        closestSlot.item.y = lastSlot.y;
-                        lastSlot.item = closestSlot.item;
-                        lastSlot = null; // clear the reference
-                    }
-                    
-                    heldItem.x = closestSlot.x;
-                    heldItem.y = closestSlot.y;
-                    closestSlot.item = heldItem;
-                } else {
-                    for(var i=0;i<scope.items.length;i++) {
-                        var item = scope.items[i];
-                        if(item.json.name == heldItem.json.name) {
-                            heldItem.kill();
-                            scope.items.splice(i,1);
-                            break;
-                        }
-                    }
-                    scope.items.forEach(function(item) {
-                    })
-                }
-            });
-            
-            inventorySprite.events.onInputDown.add(function(item, pointer) {
-                if(pointer.rightButton.isDown) {
-                    
-                }
-            });
         }
+        
     }
     
     Inventory.prototype.update = function() {
+        
+        while(this.pending.length > 0) {
+            this.processItem(this.pending.shift());
+        }
+        
         if(scope.bg.cameraOffset.x != scope.header.cameraOffset.x) scope.bg.cameraOffset.x = scope.header.cameraOffset.x;
         if(scope.bg.cameraOffset.y != scope.header.cameraOffset.y+12) scope.bg.cameraOffset.y = scope.header.cameraOffset.y+12;
     };

@@ -11,7 +11,7 @@ function() {
             name: 'blueItem',
             color: 0x0000ff,
             colorString: '#0000ff',
-            stackable: true
+            stack: 8
         },
         'greenItem': {
             name: 'greenItem',
@@ -22,7 +22,7 @@ function() {
             name: 'redItem',
             color: 0xff0000,
             colorString: '#ff0000',
-            stackable: true
+            stack: 8
         }
     };
     

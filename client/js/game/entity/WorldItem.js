@@ -12,6 +12,7 @@ function(game, Entity, registry) {
     this.json = json;
     
     this.stack = 1;
+    this.maxStack = json.stack;
     
     this.width = 6;
     this.height = 6;
