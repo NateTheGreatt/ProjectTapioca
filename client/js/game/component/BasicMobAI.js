@@ -9,7 +9,7 @@ function(game, Component) {
     this.target = undefined;
 
     this.flee = false;
-    this.speed = 1;
+    this.speed = this.parent.speed;
     this.aggroRange = 40;
 
     if(opts){
@@ -19,6 +19,8 @@ function(game, Component) {
     }
 
     if(this.flee) this.speed *= -1;
+    
+    this.onAttack = new Phaser.Signal();
   }
 
   BasicMobAI.prototype = Object.create(Component.prototype);
@@ -30,23 +32,28 @@ function(game, Component) {
 
   BasicMobAI.prototype.update = function() {
     if(this.target) {
+      var parentMidpoint = this.parent.getMidpoint();
+      var targetMidpoint = this.target.getMidpoint();
+      
       var angle = game.math.angleBetween(
-        this.parent.getMidpoint().x,
-        this.parent.getMidpoint().y,
-        this.target.getMidpoint().x,
-        this.target.getMidpoint().y
+        parentMidpoint.x,
+        parentMidpoint.y,
+        targetMidpoint.x,
+        targetMidpoint.y
       );
 
       var dist = game.math.distance(
-        this.parent.getMidpoint().x,
-        this.parent.getMidpoint().y,
-        this.target.getMidpoint().x,
-        this.target.getMidpoint().y
+        parentMidpoint.x,
+        parentMidpoint.y,
+        targetMidpoint.x,
+        targetMidpoint.y
       );
 
       if(dist > this.target.width) {
         this.parent.x += Math.cos(angle)*this.speed;
         this.parent.y += Math.sin(angle)*this.speed;
+      } else {
+        this.onAttack.dispatch();
       }
     }
   }

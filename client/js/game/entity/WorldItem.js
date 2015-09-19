@@ -11,8 +11,10 @@ function(game, Entity, registry) {
     
     this.json = json;
     
-    this.width = 12;
-    this.height = 12;
+    this.stack = 1;
+    
+    this.width = 6;
+    this.height = 6;
     
     this.tint = json.color;
     
@@ -22,8 +24,8 @@ function(game, Entity, registry) {
   WorldItem.prototype.constructor = WorldItem;
   
   WorldItem.prototype.handleOverlap = function(item,player) {
-      item.kill();
-      player.inventory.addItem(item.json);
+      // item.kill();
+      player.pickUp(item);
   };
 
   WorldItem.prototype.update = function() {

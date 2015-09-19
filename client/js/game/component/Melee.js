@@ -6,12 +6,14 @@ function(game, World, Component, Player,registry) {
     if(this.parent.name == 'Player') this.target = game.input.activePointer;
     else this.target = null;
 
-    this.cooldown = 700; // ms
+    this.cooldown = 420; // ms
     this.cooling = this.cooldown;
     this.swinging = false;
     this.dmg = 25;
 
-    this.hitbox = new Phaser.Sprite(game, 0, 0);
+    this.hitbox = new Phaser.Sprite(game, 0, 16);
+    this.hitbox.width = this.parent.width;
+    this.hitbox.height = this.parent.width;
     game.physics.enable(this.hitbox, Phaser.Physics.ARCADE);
     parent.addChild(this.hitbox);
   }
@@ -24,12 +26,11 @@ function(game, World, Component, Player,registry) {
   }
 
   Melee.prototype.setHitboxPos = function() {
-    var parentMidpoint = {x: this.parent.x+(this.parent.width/2), y: this.parent.y+(this.parent.height/2)};
-    var targetMidpoint = {x: this.target.x, y: this.target.y};
-    if(this.parent.name != 'Player') {
-      targetMidpoint.x += this.target.width/2;
-      targetMidpoint.y += this.target.height/2;
-    }
+    var parentMidpoint = this.parent.getMidpoint();
+    var targetMidpoint;
+    if(this.parent.name == 'Player') targetMidpoint = {x: this.target.worldX, y: this.target.worldY-this.parent.body.offset.y};
+    if(this.parent.name != 'Player') targetMidpoint = this.target.getMidpoint();
+
     var angle = game.math.angleBetween(
       parentMidpoint.x,
       parentMidpoint.y,
@@ -58,6 +59,7 @@ function(game, World, Component, Player,registry) {
 
   Melee.prototype.update = function() {
     if(this.parent.alive) {
+      game.debug.body(this.hitbox);
       this.cooling -= game.time.elapsed;
       if(this.parent.name == 'Player') {
         
@@ -72,10 +74,6 @@ function(game, World, Component, Player,registry) {
         }
         
       }
-  
-      if(this.swinging) {
-      }
-        game.debug.body(this.hitbox);
     }
   }
 

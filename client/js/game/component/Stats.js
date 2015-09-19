@@ -15,23 +15,38 @@ function(Component) {
     this.def = 1;
     this.mdef = 1;
     this.exp = 0;
-
-    // optional
-    if(opts) {
-      this.maxHP = opts.hp;
-      this.maxMP = opts.mp;
-      this.hp = opts.hp;
-      this.mp = opts.mp;
-      this.str = opts.str;
-      this.agi = opts.agi;
-      this.int = opts.int;
-    }
+    this.expCap = 30;
+    this.level = 1;
+    this.points = 0;
 
     this.modifiers = [];
   }
 
   Stats.prototype = Object.create(Component.prototype);
   Stats.prototype.constructor = Stats;
+  
+  Stats.prototype.levelUp = function() {
+    
+    this.level++;
+    this.expCap = this.expCap + Math.round(this.expCap*1.33);
+    console.log('leveled up: '+this.level);
+    // give stat/talent/whatever points
+    this.points += 3;
+    this.maxHP += Math.round(this.str/this.level);
+    this.hp = this.maxHP;
+    this.maxMP += Math.round(this.int/this.level);
+    this.mp = this.maxMP;
+    
+  };
+  
+  Stats.prototype.addExp = function(exp) {
+    this.exp += exp;
+    if(this.exp >= this.expCap) {
+      this.levelUp();
+    }
+    
+    console.log('exp: '+this.exp+'/'+this.expCap)
+  };
 
   Stats.prototype.addMod = function(mod) {
     // mod = {name: '', stat: 'stat',  add: ## || mult: ##}

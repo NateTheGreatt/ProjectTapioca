@@ -1,16 +1,24 @@
 define([
-  'game'
+  'game',
+  'registry'
 ],
-function(game) {
+function(game,registry) {
   var entityCount = 0;
   function Entity(x,y) {
-    this.rect = game.make.bitmapData(32, 32);
+    var s = 16;
+    this.rect = game.make.bitmapData(s, s);
     this.rect.ctx.fillStyle = '#FFFFFF';
-    this.rect.ctx.fillRect(0, 0, 32, 32);
+    this.rect.ctx.fillRect(0, 0, s, s);
 
     Phaser.Sprite.call(this,game,x,y,this.rect);
+    
+    this.width = s;
+    this.height = s;
+    // game.physics.enable(this, Phaser.Physics.ARCADE);
+    game.physics.arcade.enable(this);
+    this.body.collideWorldBounds = true;
 
-    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.exp = 10;
 
     this.id = entityCount++;
     this.components = {};
@@ -20,7 +28,7 @@ function(game) {
   Entity.prototype.constructor = Entity;
   
   Entity.prototype.getMidpoint = function() {
-    return {x: this.x+this.width/2, y: this.y+this.height/2};
+    return {x: this.body.x+this.body.halfWidth, y: this.body.y+this.body.halfHeight-this.body.offset.y};
   };
 
   Entity.prototype.updateComponents = function() {
@@ -40,8 +48,24 @@ function(game) {
     delete this.components[name];
     return this;
   };
+  
+  Entity.prototype.handleCollide = function() {
+    console.log('hi');
+  }
+  
   Entity.prototype.update = function() {
-    if(this.alive) this.updateComponents();
+    if(this.alive) {
+      
+      this.body.preUpdate();
+      
+      this.updateComponents();
+      game.physics.arcade.collide(this,registry.walls,this.handleCollide,null,this);
+      
+      this.body.postUpdate();
+      
+      game.debug.body(this,'red',false);
+      game.debug.spriteBounds(this, 'pink', false);
+    }
   }
 
   return Entity;
