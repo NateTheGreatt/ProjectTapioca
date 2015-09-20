@@ -17,7 +17,7 @@ function(game,Component,registry) {
         this.pending = [];
         
         this.items = [];
-        this.slots = 4;
+        this.slots = 10;
         
         padding = 5;
         icoSize = 16;
@@ -211,7 +211,17 @@ function(game,Component,registry) {
                 
                 item.events.onInputDown.add(function(item, pointer) {
                     if(pointer.rightButton.isDown) {
+                        if(item.stack > 1) {
+                            item.stack--;
+                            item.children[0].setText(item.stack);
+                        } else {
+                            item.kill();
+                            item.slot.item = undefined;
+                            scope.bg.removeChild(item);
+                            scope.items.splice(scope.items.indexOf(item),1);
+                        }
                         
+                        // item.consume();
                     }
                 });
 
