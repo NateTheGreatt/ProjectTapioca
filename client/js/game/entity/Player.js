@@ -3,11 +3,11 @@ define([
   'entity/Alive',
   'component/PlayerControl',
   'component/Melee',
-  'component/ProjectileAttack',
+  'component/SpellBook',
   'component/Inventory',
   'component/DataBar'
 ],
-function(game, Alive, PlayerControl, Melee, ProjectileAttack, Inventory, DataBar) {
+function(game, Alive, PlayerControl, Melee, SpellBook, Inventory, DataBar) {
   function Player(x,y) {
     Alive.call(this, x, y);
     console.log('player added');
@@ -19,9 +19,10 @@ function(game, Alive, PlayerControl, Melee, ProjectileAttack, Inventory, DataBar
     this.name = 'Player';
     this.speed = 100;
 
-    this.inputCtrl = this.addComponent(new PlayerControl(this));
-    this.attack = this.addComponent(new Melee(this));
+    this.playerCtrl = this.addComponent(new PlayerControl(this));
+    // this.attack = this.addComponent(new Melee(this));
     // this.attack = this.addComponent(new ProjectileAttack(this));
+    this.spellBook = this.addComponent(new SpellBook(this));
     this.inventory = this.addComponent(new Inventory(this));
     this.expbar = this.addComponent(new DataBar(this,'expbar',this.stats,'exp','expCap',"#aaaaaa"));
     
@@ -29,7 +30,8 @@ function(game, Alive, PlayerControl, Melee, ProjectileAttack, Inventory, DataBar
     this.expbar.bg.y = 34;
     
     
-    this.inputCtrl.onAttack.add(this.attack.attack, this.attack);
+    // this.playerCtrl.onAttack.add(this.attack.attack, this.attack);
+    // this.playerCtrl.onAttack.add(this.spellBook.castSpell, this.spellBook);
     
     this.body.velocity.y = 10;
 

@@ -14,6 +14,9 @@ function(game, Component) {
     this.left = game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.right = game.input.keyboard.addKey(Phaser.Keyboard.D);
     this.shift = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+    this.oneKey = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    this.twoKey = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    this.threeKey = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
     
     this.onAttack = new Phaser.Signal();
   }
@@ -22,6 +25,8 @@ function(game, Component) {
   PlayerControl.prototype.constructor = PlayerControl;
 
   PlayerControl.prototype.update = function() {
+    
+    
     
     if(this.shift.isDown) {
       
@@ -45,7 +50,10 @@ function(game, Component) {
     if(this.left.isDown)this.parent.body.velocity.x = -this.speed;
     if(this.right.isDown)this.parent.body.velocity.x = this.speed;
     if(!this.left.isDown && !this.right.isDown) this.parent.body.velocity.x = 0;
-    if(game.input.activePointer.leftButton.isDown) this.onAttack.dispatch();
+    if(game.input.activePointer.leftButton.isDown) this.onAttack.dispatch({key: 0});
+    if(this.oneKey.isDown) this.onAttack.dispatch({key: 1});
+    if(this.twoKey.isDown) this.onAttack.dispatch({key: 2});
+    if(this.threeKey.isDown) this.onAttack.dispatch({key: 3});
   }
 
   return PlayerControl;

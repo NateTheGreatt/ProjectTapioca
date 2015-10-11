@@ -36,14 +36,16 @@ function(game,registry) {
       this.components[key].update();
     }
   };
+  
   Entity.prototype.addComponent = function (component) {
     this.components[component.name] = component;
     return this.components[component.name];
   };
+  
   Entity.prototype.removeComponent = function(component) {
     var name;
     if(typeof component === 'function') {
-      name = component.name;
+        name = component.name;
     } else name = component;
     delete this.components[name];
     return this;

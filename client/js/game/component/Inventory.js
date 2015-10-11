@@ -17,7 +17,7 @@ function(game,Component,registry) {
         this.pending = [];
         
         this.items = [];
-        this.slots = 10;
+        this.slots = 24;
         
         padding = 5;
         icoSize = 16;
@@ -67,7 +67,7 @@ function(game,Component,registry) {
         this.header.addChild(text);
         
         game.input.keyboard.onDownCallback = function(e) {
-            if(e.keyCode == 73) {
+            if(e.keyCode == 73) { // 73 = I
                 scope.header.visible = !scope.header.visible;
                 scope.bg.visible = !scope.bg.visible;
             }
@@ -130,7 +130,6 @@ function(game,Component,registry) {
                 item.height = icoSize;
                 item.inputEnabled = true;
                 item.input.enableDrag();
-                // item.events.destroy();
                 
                 scope.bg.addChild(item);
                 emptySlot.item = item;
@@ -157,9 +156,6 @@ function(game,Component,registry) {
                     scope.bg.removeChild(heldItem);
                     scope.bg.addChild(heldItem);
                     
-                    // var closestSlot = findClosestSlotTo(heldItem);
-                    // closestSlot.item = null;
-                    // heldItemSlot = closestSlot;
                     heldItemSlot = heldItem.slot;
                 });
                 item.events.onDragStop.add(function(heldItem, pointer) {
@@ -201,11 +197,18 @@ function(game,Component,registry) {
                         
                         
                     } else { // dragged too far out of bounds, so delete item
-                        heldItem.kill();
+                        // heldItem.kill();
                         heldItem.slot.item = undefined;
                         scope.bg.removeChild(heldItem);
                         scope.items.splice(scope.items.indexOf(heldItem),1);
-                                
+                        
+                        // add back to the game world
+                        heldItem.width = 6;
+                        heldItem.height = 6;
+                        heldItem.x = scope.parent.x;
+                        heldItem.y = scope.parent.y;
+                        heldItem.events.destroy();
+                        registry.drops.add(heldItem);
                     }
                 });
                 
